@@ -64,7 +64,7 @@ def initialize_nodes():
     node7 = Node(7, ('R', 'U', '10a'))
     node8 = Node(8, ('R', 'D', '10a'))
     node9 = Node(9, ('T', 'D', '10a'))
-    node10 = Node(10, ('11a'))
+    node10 = Node(10, ('_', '_', '11a'))
 
     # Define transitions
     transitions = {
