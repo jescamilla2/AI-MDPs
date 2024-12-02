@@ -14,6 +14,7 @@ class Node:
         self.transitions = transitions or {}
         self.rewards = rewards or {}
         self.value = 0  # Initialize value to 0
+        self.policy = None # Store the optimal policy (action)
 
     def update_value(self, new_value):
         """
@@ -22,6 +23,14 @@ class Node:
         :return: None
         """
         self.value = new_value
+
+    def get_possible_actions(self):
+        """
+        Extract unique actions from the transitions dictionary
+        :return: list of unique actions available from this state
+        """
+        actions = {key[1] for key in self.transitions.keys()}
+        return list(actions)
 
     def select_action(self):
         """
@@ -47,6 +56,34 @@ class Node:
             if rand < cumulative_prob:
                 return next_node
         return next_node  # Default to the last node if cumulative probabilities don't match
+
+    def get_next_state_value(self, action, nodes):
+        """
+        Calculate the expected value for a given action.
+        :param action: The action for which to compute the expected value.
+        :param nodes: A dictionary of all nodes by their ID, used to access the value of the next state.
+        :return: The expected value for taking the given action.
+        """
+        total_value = 0
+
+        # Iterate through transitions to find relevant (current_state, action, next_state) tuples
+        for (current_state, act, next_state), prob in self.transitions.items():
+            if act == action:
+                # Get the reward for this transition
+                if (current_state, action, next_state) in self.rewards:
+                    reward = self.rewards[(current_state, action, next_state)]
+                else:
+                    reward = 0 # Default reward if not found
+
+                # Get the value of the next state, default to 0 if the next state is not found
+                next_state_value = nodes[next_state].value if next_state in nodes else 0
+
+                # Update total value based on Bellman equation
+                if prob > 0:
+                    total_value += prob * (reward + 0.99 * next_state_value)  # Using discount factor 0.99
+
+        return total_value
+
 
 def initialize_nodes():
     """
