@@ -1,13 +1,14 @@
 import random
 
 class Node:
-    def __init__(self, id, state, transitions=None, rewards=None):
+    def __init__(self, id, state, transitions=None, rewards=None, is_terminal=False):
         """
         Node constructor for MDP representation.
         :param id: Unique identifier for the node.
         :param state: A tuple representing the state of the node (e.g., ('R', 'U', '8p')).
         :param transitions: A dictionary where keys are (current_node, action, next_node) and values are probabilities.
         :param rewards: A dictionary where keys are (current_node, action, next_node) and values are rewards.
+        :param is_terminal: Boolean flag to specify if the node is terminal.
         """
         self.id = id
         self.state = state
@@ -15,6 +16,8 @@ class Node:
         self.rewards = rewards or {}
         self.value = 0  # Initialize value to 0
         self.policy = None # Store the optimal policy (action)
+        self.q_values = {} # Initialize Q-values dictionary
+        self.is_terminal_state = is_terminal  # Flag to indicate if this node is terminal
 
     def update_value(self, new_value):
         """
@@ -57,7 +60,7 @@ class Node:
                 return next_node
         return next_node  # Default to the last node if cumulative probabilities don't match
 
-    def get_next_state_value(self, action, nodes):
+    def get_next_state_value(self, action, nodes, discount_factor):
         """
         Calculate the expected value for a given action.
         :param action: The action for which to compute the expected value.
@@ -80,10 +83,34 @@ class Node:
 
                 # Update total value based on Bellman equation
                 if prob > 0:
-                    total_value += prob * (reward + 0.99 * next_state_value)  # Using discount factor 0.99
+                    total_value += prob * (reward + discount_factor * next_state_value)  # Using discount factor 0.99
 
         return total_value
 
+    def is_terminal(self):
+        """
+        Check if this node is a terminal state.
+        :return: True if terminal, False otherwise.
+        """
+        return self.is_terminal_state
+
+    # Q-learning specific methods:
+    def q_value(self, action):
+        """
+        Retrieve the Q-value for a given state-action pair.
+        :param action: The action for which to get the Q-value.
+        :return: The Q-value for the (state, action) pair. Defaults to 0 if the action is not initialized.
+        """
+        return self.q_values.get(action, 0)  # Returns 0 if action is not found in q_values
+
+    def set_q_value(self, action, value):
+        """
+        Set the Q-value for a given state-action pair.
+        :param action: The action for which to set the Q-value.
+        :param value: The new Q-value to assign to the (state, action) pair.
+        :return: None
+        """
+        self.q_values[action] = value
 
 def initialize_nodes():
     """
@@ -101,7 +128,7 @@ def initialize_nodes():
     node7 = Node(7, ('R', 'U', '10a'))
     node8 = Node(8, ('R', 'D', '10a'))
     node9 = Node(9, ('T', 'D', '10a'))
-    node10 = Node(10, ('_', '_', '11a'))
+    node10 = Node(10, ('_', '_', '11a'), is_terminal=True)
 
     # Define transitions
     transitions = {
@@ -134,6 +161,11 @@ def initialize_nodes():
     for node in [node0, node1, node2, node3, node4, node5, node6, node7, node8, node9, node10]:
         node.rewards = {key: value for key, value in rewards.items() if key[0] == node.id}
         node.transitions = {key: value for key, value in transitions.items() if key[0] == node.id}
+
+        # Initialize Q-values for each possible action (set to 0)
+        possible_actions = list(set(action for _, action, _ in node.transitions.keys()))
+        for action in possible_actions:
+            node.set_q_value(action, 0.0)  # Set Q-value for each action to 0 initially
 
     return {
         0: node0, 1: node1, 2: node2, 3: node3, 4: node4,

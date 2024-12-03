@@ -27,7 +27,7 @@ def value_iteration(nodes, threshold=0.001, discount_factor=0.99):
             # Evaluate all possible actions from the current node
             for action in node.get_possible_actions():
                 # Compute the value for this action
-                action_value = node.get_next_state_value(action, nodes)
+                action_value = node.get_next_state_value(action, nodes, discount_factor)
 
                 # Store the action value
                 action_values[action] = action_value
