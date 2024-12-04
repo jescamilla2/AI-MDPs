@@ -1,5 +1,4 @@
-# Import your Node class and initialization function
-from node import Node, initialize_nodes
+
 
 def value_iteration(nodes, threshold=0.001, discount_factor=0.99):
     """
@@ -65,21 +64,3 @@ def value_iteration(nodes, threshold=0.001, discount_factor=0.99):
     print(f"\nTotal Iterations: {iterations}")
 
 
-# run through
-if __name__ == "__main__":
-    """
-    Main method to set up the MDP, run value iteration, and display results.
-    """
-    # Step 1: Initialize nodes and their transitions/rewards
-    nodes = initialize_nodes()
-
-    # Step 2: Run value iteration
-    print("Starting Value Iteration...\n")
-    value_iteration(nodes)
-
-    # Step 3: Display final results
-    print("\nFinal Results After Value Iteration:")
-    print("-" * 50)
-    for node_id, node in nodes.items():
-        print(f"Node ({nodes[node_id].state[0]}{nodes[node_id].state[1]} {nodes[node_id].state[2]:>3s}): Value = {node.value:>7.4f}, Optimal Action = {node.policy}")
-    print("-" * 50)

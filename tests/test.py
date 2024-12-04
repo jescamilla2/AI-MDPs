@@ -1,5 +1,5 @@
 # Import your Node class and initialization function
-from node import Node, initialize_nodes
+from src.node import initialize_nodes
 
 
 def test_node():

@@ -1,6 +1,4 @@
-# Import your Node class and initialization function
-from node import Node, initialize_nodes
-
+import random
 
 def run_episode(start_node, nodes):
     """
@@ -78,16 +76,10 @@ def run_experiment(start_node, nodes, episodes=50, alpha=0.1):
         print(f"  Total Reward: {total_reward}")
         print("-" * 40)
 
-    # Print final state values and average episode reward
-    print("\nFinal Node Values:")
-    for node in nodes.values():
-        print(f"Node ({node.state[0]}{node.state[1]} {node.state[2]:>3s}) Value: {node.value: .4f}")
+
 
     average_reward = sum(total_rewards) / episodes
     print(f"\nAverage Reward per Episode: {average_reward}")
 
 
-# run through
-if __name__ == "__main__":
-    nodes = initialize_nodes()  # Make sure this initializes Node objects correctly
-    run_experiment(nodes[0], nodes)
+
